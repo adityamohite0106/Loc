@@ -1,0 +1,217 @@
+.income-returns {
+  background: white;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.income-returns .form-header {
+  background: linear-gradient(135deg, #4f83cc 0%, #5a67d8 100%);
+  color: white;
+  padding: 20px 30px;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  border-radius: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.income-returns .form-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+  transform: rotate(45deg);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.income-returns .form-section {
+  padding: 35px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+}
+
+/* Section Titles */
+.income-returns .section-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 25px 0 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Tables */
+.income-returns .table-section {
+  overflow-x: auto;
+  margin-bottom: 30px;
+}
+
+.income-returns table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.income-returns table thead {
+  background: #f1f5f9;
+}
+
+.income-returns table thead th {
+  padding: 14px;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.income-returns table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.income-returns table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Inputs & Selects */
+.income-returns table input,
+.income-returns table select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: white;
+  color: #1f2937;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.income-returns table input:focus,
+.income-returns table select:focus {
+  outline: none;
+  border-color: #4f83cc;
+  box-shadow: 0 0 0 3px rgba(79, 131, 204, 0.15);
+  transform: translateY(-2px);
+}
+
+.income-returns table input:hover,
+.income-returns table select:hover {
+  border-color: #9ca3af;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Remove number spinner */
+.income-returns table input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.income-returns table input[type="number"]::-webkit-outer-spin-button,
+.income-returns table input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Buttons */
+.income-returns .form-actions {
+  margin-top: 40px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding: 25px 0 0 0;
+  border-top: 2px solid #f1f5f9;
+}
+
+.income-returns .btn {
+  padding: 14px 35px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.income-returns .btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.income-returns .btn:hover::before {
+  left: 100%;
+}
+
+.income-returns .btn-primary {
+  background: linear-gradient(135deg, #4f83cc 0%, #5a67d8 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(79, 131, 204, 0.3);
+}
+
+.income-returns .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(79, 131, 204, 0.4);
+}
+
+.income-returns .btn-primary:active {
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .income-returns .form-section {
+    padding: 25px 20px;
+  }
+
+  .income-returns table thead {
+    display: none;
+  }
+
+  .income-returns table tbody tr {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+    background: #fff;
+  }
+
+  .income-returns table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border: none;
+  }
+
+  .income-returns table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #374151;
+    flex: 1;
+    margin-right: 12px;
+    font-size: 0.9rem;
+  }
+}
