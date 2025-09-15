@@ -1,6 +1,6 @@
 .bank-details-plain {
   background: #fff;
-  border: 2px solid #1976d2;
+  /* border: 2px solid #1976d2; */
   border-radius: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
   margin: 0;
@@ -28,7 +28,7 @@
 }
 
 .section-subheader.blue-link {
-  color: #1976d2;
+  color: #6a6a6a;
   background: #fff;
   font-weight: 500;
   font-size: 1rem;

@@ -33,7 +33,7 @@ const PropertyFirm = ({ data, onUpdate }) => {
   return (
     <div className="property-firm">
       <div className="form-header">
-        Property/ Other Firm
+        Property/Other Firm
       </div>
       
       <div className="form-section">

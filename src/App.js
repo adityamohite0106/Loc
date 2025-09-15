@@ -74,16 +74,17 @@ const App = () => {
       <div className="app-header">
         <h1>Loan Application Details</h1>
       </div>
-      <div className="app-container">
-        <Tabs 
-          tabs={tabs} 
-          activeTab={activeTab} 
-          onTabChange={setActiveTab} 
-        />
-        <div className="tab-content">
-          {renderTabContent()}
-        </div>
-      </div>
+<div className="app-container">
+  <Tabs 
+    tabs={tabs} 
+    activeTab={activeTab} 
+    onTabChange={setActiveTab} 
+  />
+  <div className="tab-content">
+    {renderTabContent()}
+  </div>
+</div>
+
     </div>
   );
 };

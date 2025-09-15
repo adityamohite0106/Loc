@@ -1,6 +1,6 @@
 .guarantor-details-container {
   background: #fff;
-  border: 2px solid #1976d2;
+  /* border: 2px solid #1976d2; */
   border-radius: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
   margin: 0;
@@ -8,13 +8,13 @@
 }
 
 .section-header {
-  background: #1976d2;
-  color: #fff;
-  font-weight: 600;
-  padding: 18px 30px;
-  font-size: 1.25rem;
-  border-bottom: 2px solid #2196f3;
-  letter-spacing: 0.5px;
+     background: #e3f0fd;
+    color: #797b80;
+    font-weight: 600;
+    padding: 18px 30px;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #94b5d0;
+    letter-spacing: 0.5px;
 }
 
 .section-subheader {
@@ -28,7 +28,7 @@
 }
 
 .section-subheader.blue-link {
-  color: #1976d2;
+  color: #6a6a6a;
   background: #fff;
   font-weight: 500;
   font-size: 1rem;
@@ -90,7 +90,7 @@
 }
 
 .btn-primary {
-  background: #1976d2;
+  background: linear-gradient(135deg, #494d53 0%, #4c58b8 100%);
   color: #fff;
   border: none;
   border-radius: 6px;

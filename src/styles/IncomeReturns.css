@@ -5,7 +5,7 @@
 }
 
 .income-returns .form-header {
-  background: linear-gradient(135deg, #4f83cc 0%, #5a67d8 100%);
+  background: linear-gradient(135deg, #494d53 0%, #4c58b8 100%);
   color: white;
   padding: 20px 30px;
   margin: 0;
@@ -165,7 +165,7 @@
 }
 
 .income-returns .btn-primary {
-  background: linear-gradient(135deg, #4f83cc 0%, #5a67d8 100%);
+  background: linear-gradient(135deg, #494d53 0%, #4c58b8 100%);
   color: white;
   box-shadow: 0 4px 15px rgba(79, 131, 204, 0.3);
 }
