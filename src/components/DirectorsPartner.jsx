@@ -1,99 +1,120 @@
-import React, { useState } from "react";
-import "../styles/CustomerDetails.css"; // Reuse the blue/white style
+import React, { useState } from 'react';
+import '../styles/DirectorsPartner.css';
 
-const emptyRow = { name: "", dob: "", share: "", qualification: "" };
+const DirectorsPartner = ({ data, onUpdate, onNext, onPrevious }) => {
+  const [formData, setFormData] = useState({
+    type: data.type || '',
+    rows: data.rows || [{ name: '', dob: '', share: '', qualification: '' }]
+  });
 
-const DirectorPartner = ({ data = {}, onUpdate = () => {} }) => {
-  const [type, setType] = useState(data.type || "Partner");
-  const [rows, setRows] = useState(
-    data.rows && data.rows.length > 0
-      ? [...data.rows]
-      : [emptyRow, emptyRow, emptyRow, emptyRow, emptyRow]
-  );
-
-  const handleTypeChange = (e) => {
-    setType(e.target.value);
-    onUpdate({ ...data, type: e.target.value, rows });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    const updatedData = { ...formData, [name]: value };
+    setFormData(updatedData);
+    onUpdate(updatedData);
   };
 
-  const handleRowChange = (idx, e) => {
-    const updated = [...rows];
-    updated[idx] = { ...updated[idx], [e.target.name]: e.target.value };
-    setRows(updated);
-    onUpdate({ ...data, type, rows: updated });
+  const handleRowChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedRows = [...formData.rows];
+    updatedRows[index] = { ...updatedRows[index], [name]: value };
+    setFormData({ ...formData, rows: updatedRows });
+    onUpdate({ ...formData, rows: updatedRows });
+  };
+
+  const addRow = () => {
+    setFormData({
+      ...formData,
+      rows: [...formData.rows, { name: '', dob: '', share: '', qualification: '' }]
+    });
+  };
+
+  const validateForm = () => {
+    return formData.type && formData.rows.some(row => row.name && row.dob && row.share && row.qualification);
+  };
+
+  const handleNextClick = () => {
+    if (validateForm()) {
+      onNext();
+    } else {
+      alert('Please fill all required fields.');
+    }
+  };
+
+  const handlePreviousClick = () => {
+    onPrevious();
   };
 
   return (
-    <div className="customer-details-container">
-      <div className="form-header">Directors Partner</div>
-      <div className="accounts-table" style={{ paddingBottom: 0 }}>
-        <div style={{ padding: "18px 0 10px 0" }}>
-          <label style={{ marginRight: 24 }}>
-            <input
-              type="radio"
-              name="type"
-              value="Director"
-              checked={type === "Director"}
-              onChange={handleTypeChange}
-              style={{ marginRight: 6 }}
-            />
-            Director
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="type"
-              value="Partner"
-              checked={type === "Partner"}
-              onChange={handleTypeChange}
-              style={{ marginRight: 6 }}
-            />
-            Partner
-          </label>
+    <div className="directors-partner">
+      <div className="form-header">Director/Partner</div>
+      <div className="form-section">
+        <div className="form-group">
+          <label>Type *</label>
+          <select name="type" value={formData.type} onChange={handleInputChange} required>
+            <option value="">Select Type</option>
+            <option value="Director">Director</option>
+            <option value="Partner">Partner</option>
+          </select>
         </div>
-        <div className="accounts-row header">
-          <div>Sr.No.</div>
-          <div>Name</div>
-          <div>DOB</div>
-          <div>Share in Business</div>
-          <div>Education / Qualification</div>
-        </div>
-        {rows.map((row, i) => (
-          <div className="accounts-row" key={i}>
-            <input value={i + 1} readOnly style={{ background: "#f5faff" }} />
-            <input
-              name="name"
-              value={row.name}
-              onChange={e => handleRowChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="dob"
-              type="date"
-              value={row.dob}
-              onChange={e => handleRowChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="share"
-              value={row.share}
-              onChange={e => handleRowChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="qualification"
-              value={row.qualification}
-              onChange={e => handleRowChange(i, e)}
-              autoComplete="off"
-            />
+        {formData.rows.map((row, index) => (
+          <div key={index} className="form-grid">
+            <div className="form-group">
+              <label>Name *</label>
+              <input
+                type="text"
+                name="name"
+                value={row.name}
+                onChange={(e) => handleRowChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Date of Birth *</label>
+              <input
+                type="date"
+                name="dob"
+                value={row.dob}
+                onChange={(e) => handleRowChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Share *</label>
+              <input
+                type="number"
+                name="share"
+                value={row.share}
+                onChange={(e) => handleRowChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Qualification *</label>
+              <input
+                type="text"
+                name="qualification"
+                value={row.qualification}
+                onChange={(e) => handleRowChange(index, e)}
+                required
+              />
+            </div>
           </div>
         ))}
-      </div>
-      <div style={{ display: "flex", justifyContent: "center", padding: "20px 0" }}>
-        <button className="btn-primary" type="button">Next</button>
+        <button type="button" className="btn btn-secondary" onClick={addRow}>
+          Add Row
+        </button>
+        <div className="form-actions">
+          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick}>
+            Previous
+          </button>
+          <button type="button" className="btn btn-primary" onClick={handleNextClick}>
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default DirectorPartner;
+export default DirectorsPartner;

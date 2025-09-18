@@ -1,315 +1,285 @@
-import React, { useState } from "react";
-import "../styles/CustomerDetails.css"; // Reuse the blue border/table style
+import React, { useState } from 'react';
+import '../styles/CustomerDetails.css';
 
-const initialForm = {
-  appNo: "",
-  brcd: "",
-  appDate: "",
-  type: "Applicant Details",
-  customerNo: "",
-  customerName: "",
-  mobile: "",
-  memberNo: "",
-  dob: "",
-  dependants: "",
-  maritalStatus: "",
-  address: "",
-  roadStreet: "",
-  nearOpp: "",
-  city: "",
-  pin: "",
-  taluka: "",
-  district: "",
-  state: "",
-  occupation: "",
-  officeContact: "",
-  officeLandline: "",
-  designation: "",
-  completedYear: "",
-  monthlySalary: "",
-  netSalary: "",
-  firmName: "",
-  proprietor: "",
-  shares: "",
-  annualIncome: "",
-  orgType: "",
-  businessType: "",
-  goods: "",
-  estDate: "",
-  area: "",
-  shopAct: "",
-  salesTax: "",
-  pan: "",
-  investment: "",
-  market: "",
-  competition: "",
-  officeAddr: "",
-  officeRoad: "",
-  officeNearOpp: "",
-};
+const CustomerDetails = ({ data, onUpdate, onNext, onPrevious }) => {
+  const [formData, setFormData] = useState({
+    appNo: data.appNo || '',
+    brcd: data.brcd || '',
+    customerNo: data.customerNo || '',
+    customerName: data.customerName || '',
+    mobile: data.mobile || '',
+    memberNo: data.memberNo || '',
+    dob: data.dob || '',
+    address: data.address || '',
+    roadStreet: data.roadStreet || '',
+    pin: data.pin || '',
+    city: data.city || '',
+    taluka: data.taluka || '',
+    district: data.district || '',
+    state: data.state || '',
+    occupation: data.occupation || '',
+    monthlySalary: data.monthlySalary || '',
+    netSalary: data.netSalary || '',
+    firmName: data.firmName || '',
+    annualIncome: data.annualIncome || '',
+    officeAddr: data.officeAddr || ''
+  });
 
-const maritalOptions = ["Married", "UnMarried"];
-const stateOptions = ["MAHARASHTRA", "GUJARAT", "MADHYA PRADESH"];
-const orgTypes = ["Proprietorship", "Partnership", "LLP", "Pvt Ltd", "Other"];
-const businessTypes = ["Wholesale", "Semi Wholesale", "Retail", "Other"];
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    const updatedData = { ...formData, [name]: value };
+    setFormData(updatedData);
+    onUpdate(updatedData);
+  };
 
-const CustomerDetails = ({ data = {} }) => {
-  const [form, setForm] = useState({ ...initialForm, ...data });
+  const validateForm = () => {
+    return (
+      formData.appNo &&
+      formData.brcd &&
+      formData.customerNo &&
+      formData.customerName &&
+      formData.mobile &&
+      formData.memberNo &&
+      formData.dob &&
+      formData.address &&
+      formData.roadStreet &&
+      formData.pin &&
+      formData.city &&
+      formData.taluka &&
+      formData.district &&
+      formData.state &&
+      formData.occupation &&
+      formData.monthlySalary &&
+      formData.netSalary &&
+      formData.firmName &&
+      formData.annualIncome &&
+      formData.officeAddr
+    );
+  };
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleNextClick = () => {
+    if (validateForm()) {
+      onNext();
+    } else {
+      alert('Please fill all required fields.');
+    }
+  };
+
+  const handlePreviousClick = () => {
+    onPrevious();
   };
 
   return (
-    <div className="bank-details-plain">
-      <div className="form-header">
-        Customer Account Detail's
-        </div>
-      {/* Application Info */}
-      <div className="accounts-table">
-        <div className="accounts-row">
-          <div>
-            <label>AppNo *</label>
-            <input name="appNo" value={form.appNo} onChange={handleChange} placeholder="Enter Application No" />
+    <div className="customer-details">
+      <div className="form-header">Customer Details</div>
+      <div className="form-section">
+        <div className="form-grid">
+          <div className="form-group">
+            <label>Application No *</label>
+            <input
+              type="text"
+              name="appNo"
+              value={formData.appNo}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
+          <div className="form-group">
             <label>BRCD *</label>
-            <input name="brcd" value={form.brcd} onChange={handleChange} placeholder="Enter BRCD" />
+            <input
+              type="text"
+              name="brcd"
+              value={formData.brcd}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
-            <label>Application Sale Date</label>
-            <input name="appDate" value={form.appDate} onChange={handleChange} placeholder="DD/MM/YYYY" />
+          <div className="form-group">
+            <label>Customer No *</label>
+            <input
+              type="text"
+              name="customerNo"
+              value={formData.customerNo}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-        </div>
-        <div className="accounts-row">
-          <div>
-            <label>Type *</label>
-            <select name="type" value={form.type} onChange={handleChange}>
-              <option>Applicant Details</option>
-              <option>Co-Applicant Details</option>
-              <option>Surity Details</option>
-            </select>
+          <div className="form-group">
+            <label>Customer Name *</label>
+            <input
+              type="text"
+              name="customerName"
+              value={formData.customerName}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div  style={{ gridColumn: "span 2", display: "flex", flexDirection: "row",  }}>
-           <div style={{ display: "flex", flexDirection: "column", }}>
-            <label>Customer No*</label>
-            <input name="customerNo" value={form.customerNo} onChange={handleChange} style={{ width: "56%" }} placeholder="Customer No" />
-           </div>
-            <div style={{ display: "flex", flexDirection: "column", }}>
-            <label style={{ marginLeft: "4%" }}>Customer Name *</label>
-            <input name="customerName" value={form.customerName} onChange={handleChange} style={{ width: "100%", marginLeft: "4%" }} placeholder="Customer Name" />
-            </div>
-
+          <div className="form-group">
+            <label>Mobile *</label>
+            <input
+              type="text"
+              name="mobile"
+              value={formData.mobile}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
-            <label>Mobile No *</label>
-            <input name="mobile" value={form.mobile} onChange={handleChange} placeholder="Mobile No" />
-          </div>
-          <div>
+          <div className="form-group">
             <label>Member No *</label>
-            <input name="memberNo" value={form.memberNo} onChange={handleChange} placeholder="Member No" />
+            <input
+              type="text"
+              name="memberNo"
+              value={formData.memberNo}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-        </div>
-        <div className="accounts-row">
-          <div>
+          <div className="form-group">
             <label>Date of Birth *</label>
-            <input type="date" name="dob" value={form.dob} onChange={handleChange} placeholder="Date of Birth" />
+            <input
+              type="date"
+              name="dob"
+              value={formData.dob}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
-            <label>No of Dependence</label>
-            <input name="dependants" value={form.dependants} onChange={handleChange} placeholder="No of Dependants" />
+          <div className="form-group">
+            <label>Address *</label>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
-            <label>Marital Status</label>
-            <select name="maritalStatus" value={form.maritalStatus} onChange={handleChange}>
-              <option value="">Select</option>
-              {maritalOptions.map(opt => <option key={opt}>{opt}</option>)}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Address Section */}
-      <div className="section-subheader">Current Address Detail's :</div>
-      <div className="accounts-table">
-        <div className="accounts-row">
-          <div>
-            <label>Addr Line 1 *</label>
-            <input name="address" value={form.address} onChange={handleChange} placeholder="Address Line 1" />
-          </div>
-          <div>
+          <div className="form-group">
             <label>Road/Street *</label>
-            <input name="roadStreet" value={form.roadStreet} onChange={handleChange} placeholder="Road/Street" />
+            <input
+              type="text"
+              name="roadStreet"
+              value={formData.roadStreet}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
-            <label>Near/Opp</label>
-            <input name="nearOpp" value={form.nearOpp} onChange={handleChange} placeholder="Near/Opp" />
+          <div className="form-group">
+            <label>PIN *</label>
+            <input
+              type="text"
+              name="pin"
+              value={formData.pin}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-        </div>
-        <div className="accounts-row">
-          <div>
-            <label>PIN Code *</label>
-            <input name="pin" value={form.pin} onChange={handleChange} placeholder="PIN Code" />
-          </div>
-          <div>
+          <div className="form-group">
             <label>City *</label>
-            <input name="city" value={form.city} onChange={handleChange} placeholder="City" />
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
+          <div className="form-group">
             <label>Taluka *</label>
-            <input name="taluka" value={form.taluka} onChange={handleChange} placeholder="Taluka" />
+            <input
+              type="text"
+              name="taluka"
+              value={formData.taluka}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
+          <div className="form-group">
             <label>District *</label>
-            <input name="district" value={form.district} onChange={handleChange} placeholder="District" />
+            <input
+              type="text"
+              name="district"
+              value={formData.district}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
+          <div className="form-group">
             <label>State *</label>
-            <select name="state" value={form.state} onChange={handleChange}>
-              <option value="">Select</option>
-              {stateOptions.map(opt => <option key={opt}>{opt}</option>)}
-            </select>
+            <input
+              type="text"
+              name="state"
+              value={formData.state}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-        </div>
-      </div>
-
-      {/* Income Section */}
-      <div className="section-subheader">Income Detail's :</div>
-      <div className="accounts-table">
-        <div className="accounts-row">
-          <div>
+          <div className="form-group">
             <label>Occupation *</label>
-            <select name="occupation" value={form.occupation} onChange={handleChange}>
-              <option value="">Select</option>
-              <option>SERVICE</option>
-              <option>BUSINESS</option>
-              <option>OTHER</option>
-            </select>
+            <input
+              type="text"
+              name="occupation"
+              value={formData.occupation}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
-            <label>Office Contact no</label>
-            <input name="officeContact" value={form.officeContact} onChange={handleChange} placeholder="Office Contact No" />
-          </div>
-          <div>
-            <label>Office Landline no</label>
-            <input name="officeLandline" value={form.officeLandline} onChange={handleChange} placeholder="Office Landline No" />
-          </div>
-        </div>
-        <div className="accounts-row">
-          <div>
-            <label>Designation</label>
-            <input name="designation" value={form.designation} onChange={handleChange} placeholder="Designation" />
-          </div>
-          <div>
-            <label>Completed Year</label>
-            <input name="completedYear" value={form.completedYear} onChange={handleChange} placeholder="Completed Year" />
-          </div>
-          <div>
+          <div className="form-group">
             <label>Monthly Salary *</label>
-            <input name="monthlySalary" value={form.monthlySalary} onChange={handleChange} placeholder="Monthly Salary" />
+            <input
+              type="number"
+              name="monthlySalary"
+              value={formData.monthlySalary}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
-            <label>Net Salary in Hand *</label>
-            <input name="netSalary" value={form.netSalary} onChange={handleChange} placeholder="Net Salary in Hand" />
+          <div className="form-group">
+            <label>Net Salary *</label>
+            <input
+              type="number"
+              name="netSalary"
+              value={formData.netSalary}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-        </div>
-      </div>
-
-      {/* Business Section */}
-      <div className="section-subheader">Business / Firm / Office Information :</div>
-      <div className="accounts-table">
-        <div className="accounts-row">
-          <div>
-            <label>Name of Firm *</label>
-            <input name="firmName" value={form.firmName} onChange={handleChange} placeholder="Firm Name" />
+          <div className="form-group">
+            <label>Firm Name *</label>
+            <input
+              type="text"
+              name="firmName"
+              value={formData.firmName}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-          <div>
-            <label>Proprietor/Partner</label>
-            <input name="proprietor" value={form.proprietor} onChange={handleChange} placeholder="Proprietor/Partner" />
-          </div>
-          <div>
-            <label>Shares in Business</label>
-            <input name="shares" value={form.shares} onChange={handleChange} placeholder="Shares in Business" />
-          </div>
-          <div>
+          <div className="form-group">
             <label>Annual Income *</label>
-            <input name="annualIncome" value={form.annualIncome} onChange={handleChange} placeholder="Annual Income" />
+            <input
+              type="number"
+              name="annualIncome"
+              value={formData.annualIncome}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Office Address *</label>
+            <textarea
+              name="officeAddr"
+              value={formData.officeAddr}
+              onChange={handleInputChange}
+              required
+            />
           </div>
         </div>
-        <div className="accounts-row">
-          <div>
-            <label>Type of Organisation</label>
-            <select name="orgType" value={form.orgType} onChange={handleChange}>
-              <option value="">Select</option>
-              {orgTypes.map(opt => <option key={opt}>{opt}</option>)}
-            </select>
-          </div>
-          <div>
-            <label>Type of business</label>
-            <select name="businessType" value={form.businessType} onChange={handleChange}>
-              <option value="">Select</option>
-              {businessTypes.map(opt => <option key={opt}>{opt}</option>)}
-            </select>
-          </div>
-          <div>
-            <label>Description Of Goods</label>
-            <input name="goods" value={form.goods} onChange={handleChange} placeholder="Description Of Goods" />
-          </div>
-          <div>
-            <label>Date Of Establishment</label>
-            <input name="estDate" value={form.estDate} onChange={handleChange} placeholder="Date Of Establishment" />
-          </div>
-        </div>
-        <div className="accounts-row">
-          <div>
-            <label>Area of Operation</label>
-            <input name="area" value={form.area} onChange={handleChange} placeholder="Area of Operation" />
-          </div>
-          <div>
-            <label>Shop Act Licence No</label>
-            <input name="shopAct" value={form.shopAct} onChange={handleChange} placeholder="Shop Act Licence No" />
-          </div>
-          <div>
-            <label>Sales Tax No</label>
-            <input name="salesTax" value={form.salesTax} onChange={handleChange} placeholder="Sales Tax No" />
-          </div>
-          <div>
-            <label>PAN</label>
-            <input name="pan" value={form.pan} onChange={handleChange} placeholder="PAN" />
-          </div>
-        </div>
-        <div className="accounts-row">
-          <div>
-            <label>Investment In Business</label>
-            <input name="investment" value={form.investment} onChange={handleChange} placeholder="Investment In Business" />
-          </div>
-          <div>
-            <label>Market For Business</label>
-            <input name="market" value={form.market} onChange={handleChange} placeholder="Market For Business" />
-          </div>
-          <div>
-            <label>Competition in Business</label>
-            <input name="competition" value={form.competition} onChange={handleChange} placeholder="Competition in Business" />
-          </div>
-        </div>
-      </div>
-
-      {/* Company Address Section */}
-      <div className="section-subheader">Company Address Details :</div>
-      <div className="accounts-table">
-        <div className="accounts-row">
-          <div>
-            <label>Addr Line 1 *</label>
-            <input name="officeAddr" value={form.officeAddr} onChange={handleChange} placeholder="Company Address Line 1" />
-          </div>
-          <div>
-            <label>Road/Street</label>
-            <input name="officeRoad" value={form.officeRoad} onChange={handleChange} placeholder="Road/Street" />
-          </div>
-          <div>
-            <label>Near/Opp</label>
-            <input name="officeNearOpp" value={form.officeNearOpp} onChange={handleChange} placeholder="Near/Opp" />
-          </div>
+        <div className="form-actions">
+          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick}>
+            Previous
+          </button>
+          <button type="button" className="btn btn-primary" onClick={handleNextClick}>
+            Next
+          </button>
         </div>
       </div>
     </div>

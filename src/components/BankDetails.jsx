@@ -1,98 +1,96 @@
-import React from "react";
-import "../styles/BankDetails.css";
+import React, { useState } from 'react';
+import '../styles/BankDetails.css';
 
-const BankDetails = ({ data = {}, onUpdate = () => {} }) => {
-  // Prepare at least 3 empty rows for each section
-  const mainAccounts =
-    (data.accounts && data.accounts.length > 0
-      ? [...data.accounts]
-      : [{}, {}, {}]);
+const BankDetails = ({ data, onUpdate, onNext, onPrevious }) => {
+  const [accounts, setAccounts] = useState(data.accounts || [{ type: '', branch: '', accountNo: '', balance: '' }]);
 
-  const otherBankAccounts = [{}, {}, {}];
-  const otherLoans = [{}, {}, {}];
+  const handleInputChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedAccounts = [...accounts];
+    updatedAccounts[index] = { ...updatedAccounts[index], [name]: value };
+    setAccounts(updatedAccounts);
+    onUpdate({ accounts: updatedAccounts });
+  };
 
-  const handleMainChange = (index, e) => {
-    const newAccounts = [...mainAccounts];
-    newAccounts[index] = { ...newAccounts[index], [e.target.name]: e.target.value };
-    onUpdate({ accounts: newAccounts });
+  const addAccount = () => {
+    setAccounts([...accounts, { type: '', branch: '', accountNo: '', balance: '' }]);
+  };
+
+  const validateForm = () => {
+    return accounts.some(acc => acc.type && acc.branch && acc.accountNo && acc.balance);
+  };
+
+  const handleNextClick = () => {
+    if (validateForm()) {
+      onNext();
+    } else {
+      alert('Please fill at least one account with all required fields.');
+    }
+  };
+
+  const handlePreviousClick = () => {
+    onPrevious();
   };
 
   return (
-    <div className="bank-details-plain">
-      <div className="form-header">Particulars of A/c with Bank</div>
-      <div className="accounts-table">
-        <div className="accounts-row header">
-          <div>Type of A/c</div>
-          <div>Branch</div>
-          <div>A/c No.</div>
-          <div>Debit/Credit Bal.</div>
-        </div>
-        {mainAccounts.map((acc, i) => (
-          <div className="accounts-row" key={i}>
-            <input
-              name="type"
-              value={acc.type || ""}
-              onChange={e => handleMainChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="branch"
-              value={acc.branch || ""}
-              onChange={e => handleMainChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="accountNo"
-              value={acc.accountNo || ""}
-              onChange={e => handleMainChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="balance"
-              value={acc.balance || ""}
-              onChange={e => handleMainChange(i, e)}
-              autoComplete="off"
-            />
+    <div className="bank-details">
+      <div className="form-header">Bank Details</div>
+      <div className="form-section">
+        {accounts.map((account, index) => (
+          <div key={index} className="form-grid">
+            <div className="form-group">
+              <label>Account Type *</label>
+              <input
+                type="text"
+                name="type"
+                value={account.type}
+                onChange={(e) => handleInputChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Branch *</label>
+              <input
+                type="text"
+                name="branch"
+                value={account.branch}
+                onChange={(e) => handleInputChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Account No *</label>
+              <input
+                type="text"
+                name="accountNo"
+                value={account.accountNo}
+                onChange={(e) => handleInputChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Balance *</label>
+              <input
+                type="number"
+                name="balance"
+                value={account.balance}
+                onChange={(e) => handleInputChange(index, e)}
+                required
+              />
+            </div>
           </div>
         ))}
-      </div>
-
-      <div className="section-subheader">CC/SB/DEPOSIT A/cs with other Bank</div>
-      <div className="accounts-table">
-        <div className="accounts-row header">
-          <div>Type of A/c</div>
-          <div>A/c No.</div>
-          <div>Bank</div>
-          <div>Branch</div>
+        <button type="button" className="btn btn-secondary" onClick={addAccount}>
+          Add Account
+        </button>
+        <div className="form-actions">
+          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick}>
+            Previous
+          </button>
+          <button type="button" className="btn btn-primary" onClick={handleNextClick}>
+            Next
+          </button>
         </div>
-        {otherBankAccounts.map((acc, i) => (
-          <div className="accounts-row" key={i}>
-            <input name="type" autoComplete="off" />
-            <input name="accountNo" autoComplete="off" />
-            <input name="bank" autoComplete="off" />
-            <input name="branch" autoComplete="off" />
-          </div>
-        ))}
-      </div>
-
-      <div className="section-subheader blue-link">
-        If you have taken Loan from any other Bank / Financial Institution give details
-      </div>
-      <div className="accounts-table">
-        <div className="accounts-row header">
-          <div>Name of firm Institution & Branch</div>
-          <div>Loan Amt.</div>
-          <div>Amt. Outstanding</div>
-          <div>Security</div>
-        </div>
-        {otherLoans.map((acc, i) => (
-          <div className="accounts-row" key={i}>
-            <input name="firm" autoComplete="off" />
-            <input name="loanAmt" autoComplete="off" />
-            <input name="outstanding" autoComplete="off" />
-            <input name="security" autoComplete="off" />
-          </div>
-        ))}
       </div>
     </div>
   );

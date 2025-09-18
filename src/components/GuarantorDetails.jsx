@@ -1,109 +1,96 @@
-import React, { useState } from "react";
-import "../styles/GuarantorDetails.css";
+import React, { useState } from 'react';
+import '../styles/GuarantorDetails.css';
 
-const emptyGuarantor = { branch: "", whom: "", amount: "", institute: "" };
-const emptyOtherGuarantor = { whom: "", amount: "", institute: "" };
+const GuarantorDetails = ({ data, onUpdate, onNext, onPrevious }) => {
+  const [guarantors, setGuarantors] = useState(data.guarantors || [{ branch: '', whom: '', amount: '', institute: '' }]);
 
-const GuarantorDetails = ({ data = {}, onUpdate = () => {} }) => {
-  const [guarantors, setGuarantors] = useState(
-    data.guarantors && data.guarantors.length > 0
-      ? [...data.guarantors]
-      : [emptyGuarantor, emptyGuarantor, emptyGuarantor]
-  );
-  const [otherGuarantors, setOtherGuarantors] = useState(
-    data.otherGuarantors && data.otherGuarantors.length > 0
-      ? [...data.otherGuarantors]
-      : [emptyOtherGuarantor, emptyOtherGuarantor, emptyOtherGuarantor]
-  );
-
-  const handleGuarantorChange = (idx, e) => {
-    const updated = [...guarantors];
-    updated[idx] = { ...updated[idx], [e.target.name]: e.target.value };
-    setGuarantors(updated);
-    onUpdate({ guarantors: updated, otherGuarantors });
+  const handleInputChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedGuarantors = [...guarantors];
+    updatedGuarantors[index] = { ...updatedGuarantors[index], [name]: value };
+    setGuarantors(updatedGuarantors);
+    onUpdate({ guarantors: updatedGuarantors });
   };
 
-  const handleOtherGuarantorChange = (idx, e) => {
-    const updated = [...otherGuarantors];
-    updated[idx] = { ...updated[idx], [e.target.name]: e.target.value };
-    setOtherGuarantors(updated);
-    onUpdate({ guarantors, otherGuarantors: updated });
+  const addGuarantor = () => {
+    setGuarantors([...guarantors, { branch: '', whom: '', amount: '', institute: '' }]);
+  };
+
+  const validateForm = () => {
+    return guarantors.some(g => g.branch && g.whom && g.amount && g.institute);
+  };
+
+  const handleNextClick = () => {
+    if (validateForm()) {
+      onNext();
+    } else {
+      alert('Please fill at least one guarantor with all required fields.');
+    }
+  };
+
+  const handlePreviousClick = () => {
+    onPrevious();
   };
 
   return (
-    <div className="guarantor-details-container">
+    <div className="guarantor-details">
       <div className="form-header">Guarantor Details</div>
-      <div className="accounts-table">
-        <div className="accounts-row header">
-          <div>Branch</div>
-          <div>Guarantor Whom</div>
-          <div>Loan Amount</div>
-          <div>Name of institute & Branch</div>
-        </div>
-        {guarantors.map((g, i) => (
-          <div className="accounts-row" key={i}>
-            <input
-              name="branch"
-              value={g.branch}
-              onChange={e => handleGuarantorChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="whom"
-              value={g.whom}
-              onChange={e => handleGuarantorChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="amount"
-              value={g.amount}
-              onChange={e => handleGuarantorChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="institute"
-              value={g.institute}
-              onChange={e => handleGuarantorChange(i, e)}
-              autoComplete="off"
-            />
+      <div className="form-section">
+        {guarantors.map((guarantor, index) => (
+          <div key={index} className="form-grid">
+            <div className="form-group">
+              <label>Branch *</label>
+              <input
+                type="text"
+                name="branch"
+                value={guarantor.branch}
+                onChange={(e) => handleInputChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Whom *</label>
+              <input
+                type="text"
+                name="whom"
+                value={guarantor.whom}
+                onChange={(e) => handleInputChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Amount *</label>
+              <input
+                type="number"
+                name="amount"
+                value={guarantor.amount}
+                onChange={(e) => handleInputChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Institute *</label>
+              <input
+                type="text"
+                name="institute"
+                value={guarantor.institute}
+                onChange={(e) => handleInputChange(index, e)}
+                required
+              />
+            </div>
           </div>
         ))}
-      </div>
-
-      <div className="section-subheader blue-link">
-        Guarantor to anyone in other Fin. Institution
-      </div>
-      <div className="accounts-table">
-        <div className="accounts-row header">
-          <div>Guarantor Whom</div>
-          <div>Loan Amount</div>
-          <div>Name of Institute & Branch</div>
+        <button type="button" className="btn btn-secondary" onClick={addGuarantor}>
+          Add Guarantor
+        </button>
+        <div className="form-actions">
+          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick}>
+            Previous
+          </button>
+          <button type="button" className="btn btn-primary" onClick={handleNextClick}>
+            Next
+          </button>
         </div>
-        {otherGuarantors.map((g, i) => (
-          <div className="accounts-row" key={i}>
-            <input
-              name="whom"
-              value={g.whom}
-              onChange={e => handleOtherGuarantorChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="amount"
-              value={g.amount}
-              onChange={e => handleOtherGuarantorChange(i, e)}
-              autoComplete="off"
-            />
-            <input
-              name="institute"
-              value={g.institute}
-              onChange={e => handleOtherGuarantorChange(i, e)}
-              autoComplete="off"
-            />
-          </div>
-        ))}
-      </div>
-      <div className="guarantor-actions">
-        <button className="btn-primary" type="button">Next</button>
       </div>
     </div>
   );

@@ -1,139 +1,142 @@
 import React, { useState } from 'react';
 import '../styles/PropertyFirm.css';
 
-const PropertyFirm = ({ data, onUpdate }) => {
+const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
   const [formData, setFormData] = useState({
-    firmDetails: data.firmDetails || [
-      { name: '', business: '', relation: '', bankName: '' },
-      { name: '', business: '', relation: '', bankName: '' },
-      { name: '', business: '', relation: '', bankName: '' },
-      { name: '', business: '', relation: '', bankName: '' }
-    ],
     personalAssetsOwned: data.personalAssetsOwned || '',
     personalAssetsMortgaged: data.personalAssetsMortgaged || '',
-    otherAssetsShares: data.otherAssetsShares || ''
+    otherAssetsShares: data.otherAssetsShares || '',
+    firmDetails: data.firmDetails || [{ name: '', business: '', relation: '', bankName: '' }]
   });
 
-  const handleFirmDetailChange = (index, field, value) => {
-    const updatedFirmDetails = [...formData.firmDetails];
-    updatedFirmDetails[index][field] = value;
-    const updatedData = { ...formData, firmDetails: updatedFirmDetails };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    const updatedData = { ...formData, [name]: value };
     setFormData(updatedData);
     onUpdate(updatedData);
   };
 
-  const handleInputChange = (field, value) => {
-    const updatedData = { ...formData, [field]: value };
-    setFormData(updatedData);
-    onUpdate(updatedData);
+  const handleFirmChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedFirms = [...formData.firmDetails];
+    updatedFirms[index] = { ...updatedFirms[index], [name]: value };
+    setFormData({ ...formData, firmDetails: updatedFirms });
+    onUpdate({ ...formData, firmDetails: updatedFirms });
   };
 
-  const relationOptions = ['FRIEND', 'RELATIVE', 'BUSINESS PARTNER', 'COLLEAGUE', 'OTHER'];
+  const addFirm = () => {
+    setFormData({
+      ...formData,
+      firmDetails: [...formData.firmDetails, { name: '', business: '', relation: '', bankName: '' }]
+    });
+  };
+
+  const validateForm = () => {
+    return (
+      formData.personalAssetsOwned &&
+      formData.personalAssetsMortgaged &&
+      formData.otherAssetsShares &&
+      formData.firmDetails.some(firm => firm.name && firm.business && firm.relation && firm.bankName)
+    );
+  };
+
+  const handleNextClick = () => {
+    if (validateForm()) {
+      onNext();
+    } else {
+      alert('Please fill all required fields.');
+    }
+  };
+
+  const handlePreviousClick = () => {
+    onPrevious();
+  };
 
   return (
     <div className="property-firm">
-      <div className="form-header">
-        Property/Other Firm
-      </div>
-      
+      <div className="form-header">Property/Firm</div>
       <div className="form-section">
-        <div className="table-section">
-          <table className="firm-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Business</th>
-                <th>Relation With Applicant</th>
-                <th>Name of Banks where firm has Accounts</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formData.firmDetails.map((firm, index) => (
-                <tr key={index}>
-                  <td>
-                    <input
-                      type="text"
-                      value={firm.name}
-                      onChange={(e) => handleFirmDetailChange(index, 'name', e.target.value)}
-                      placeholder="Enter name"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      value={firm.business}
-                      onChange={(e) => handleFirmDetailChange(index, 'business', e.target.value)}
-                      placeholder="Business type"
-                    />
-                  </td>
-                  <td>
-                    <select
-                      value={firm.relation}
-                      onChange={(e) => handleFirmDetailChange(index, 'relation', e.target.value)}
-                    >
-                      <option value="">Select Relation</option>
-                      {relationOptions.map((relation, idx) => (
-                        <option key={idx} value={relation}>{relation}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      value={firm.bankName}
-                      onChange={(e) => handleFirmDetailChange(index, 'bankName', e.target.value)}
-                      placeholder="Bank name"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="assets-section">
+        <div className="form-grid">
           <div className="form-group">
-            <label htmlFor="personalAssetsOwned">
-              Personal Assets / Properties fully owned by you: *
-            </label>
+            <label>Personal Assets Owned *</label>
             <textarea
-              id="personalAssetsOwned"
+              name="personalAssetsOwned"
               value={formData.personalAssetsOwned}
-              onChange={(e) => handleInputChange('personalAssetsOwned', e.target.value)}
-              placeholder="List your fully owned assets and properties"
-              rows="4"
+              onChange={handleInputChange}
+              required
             />
           </div>
-
           <div className="form-group">
-            <label htmlFor="personalAssetsMortgaged">
-              Personal Assets / Properties which is mortgaged where & what sum? : *
-            </label>
+            <label>Personal Assets Mortgaged *</label>
             <textarea
-              id="personalAssetsMortgaged"
+              name="personalAssetsMortgaged"
               value={formData.personalAssetsMortgaged}
-              onChange={(e) => handleInputChange('personalAssetsMortgaged', e.target.value)}
-              placeholder="List mortgaged assets, where and for what amount"
-              rows="4"
+              onChange={handleInputChange}
+              required
             />
           </div>
-
           <div className="form-group">
-            <label htmlFor="otherAssetsShares">
-              Other Assets / Properties with Shares: *
-            </label>
+            <label>Other Assets/Shares *</label>
             <textarea
-              id="otherAssetsShares"
+              name="otherAssetsShares"
               value={formData.otherAssetsShares}
-              onChange={(e) => handleInputChange('otherAssetsShares', e.target.value)}
-              placeholder="List other assets and properties with shares"
-              rows="4"
+              onChange={handleInputChange}
+              required
             />
           </div>
         </div>
-
+        {formData.firmDetails.map((firm, index) => (
+          <div key={index} className="form-grid">
+            <div className="form-group">
+              <label>Firm Name *</label>
+              <input
+                type="text"
+                name="name"
+                value={firm.name}
+                onChange={(e) => handleFirmChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Business *</label>
+              <input
+                type="text"
+                name="business"
+                value={firm.business}
+                onChange={(e) => handleFirmChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Relation *</label>
+              <input
+                type="text"
+                name="relation"
+                value={firm.relation}
+                onChange={(e) => handleFirmChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Bank Name *</label>
+              <input
+                type="text"
+                name="bankName"
+                value={firm.bankName}
+                onChange={(e) => handleFirmChange(index, e)}
+                required
+              />
+            </div>
+          </div>
+        ))}
+        <button type="button" className="btn btn-secondary" onClick={addFirm}>
+          Add Firm
+        </button>
         <div className="form-actions">
-          <button type="button" className="btn btn-primary">
+          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick}>
+            Previous
+          </button>
+          <button type="button" className="btn btn-primary" onClick={handleNextClick}>
             Next
           </button>
         </div>

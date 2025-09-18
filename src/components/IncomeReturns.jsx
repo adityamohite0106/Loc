@@ -1,255 +1,146 @@
 import React, { useState } from 'react';
 import '../styles/IncomeReturns.css';
 
-const IncomeReturns = ({ data, onUpdate }) => {
+const IncomeReturns = ({ data, onUpdate, onNext, onPrevious }) => {
   const [formData, setFormData] = useState({
-    itReturns: data.itReturns || [
-      { accountingYear: '', ayYear: '', taxableIncome: '', taxPaid: '', taxArrears: '' },
-      { accountingYear: '', ayYear: '', taxableIncome: '', taxPaid: '', taxArrears: '' },
-      { accountingYear: '', ayYear: '', taxableIncome: '', taxPaid: '', taxArrears: '' },
-      { accountingYear: '', ayYear: '', taxableIncome: '', taxPaid: '', taxArrears: '' }
-    ],
-    purchaseSale3Years: data.purchaseSale3Years || [
-      { financialYear: '', purchaseRs: '', salesRs: '', grossProfit: '', netProfit: '' },
-      { financialYear: '', purchaseRs: '', salesRs: '', grossProfit: '', netProfit: '' },
-      { financialYear: '', purchaseRs: '', salesRs: '', grossProfit: '', netProfit: '' },
-      { financialYear: '', purchaseRs: '', salesRs: '', grossProfit: '', netProfit: '' }
-    ],
-    purchaseSaleCurrentYear: data.purchaseSaleCurrentYear || [
-      { month: '', purchase: '', sales: '' },
-      { month: '', purchase: '', sales: '' },
-      { month: '', purchase: '', sales: '' },
-      { month: '', purchase: '', sales: '' }
-    ]
+    itReturns: data.itReturns || [{ accountingYear: '', ayYear: '', taxableIncome: '' }],
+    purchaseSale3Years: data.purchaseSale3Years || [{ financialYear: '', purchaseRs: '', salesRs: '' }]
   });
 
-  const handleITReturnChange = (index, field, value) => {
-    const updatedReturns = [...formData.itReturns];
-    updatedReturns[index][field] = value;
-    const updatedData = { ...formData, itReturns: updatedReturns };
-    setFormData(updatedData);
-    onUpdate(updatedData);
+  const handleITReturnChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedITReturns = [...formData.itReturns];
+    updatedITReturns[index] = { ...updatedITReturns[index], [name]: value };
+    setFormData({ ...formData, itReturns: updatedITReturns });
+    onUpdate({ ...formData, itReturns: updatedITReturns });
   };
 
-  const handlePurchaseSale3YearsChange = (index, field, value) => {
-    const updatedData = [...formData.purchaseSale3Years];
-    updatedData[index][field] = value;
-    const updatedFormData = { ...formData, purchaseSale3Years: updatedData };
-    setFormData(updatedFormData);
-    onUpdate(updatedFormData);
+  const handlePurchaseSaleChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedPurchaseSales = [...formData.purchaseSale3Years];
+    updatedPurchaseSales[index] = { ...updatedPurchaseSales[index], [name]: value };
+    setFormData({ ...formData, purchaseSale3Years: updatedPurchaseSales });
+    onUpdate({ ...formData, purchaseSale3Years: updatedPurchaseSales });
   };
 
-  const handleCurrentYearChange = (index, field, value) => {
-    const updatedData = [...formData.purchaseSaleCurrentYear];
-    updatedData[index][field] = value;
-    const updatedFormData = { ...formData, purchaseSaleCurrentYear: updatedData };
-    setFormData(updatedFormData);
-    onUpdate(updatedFormData);
+  const addITReturn = () => {
+    setFormData({
+      ...formData,
+      itReturns: [...formData.itReturns, { accountingYear: '', ayYear: '', taxableIncome: '' }]
+    });
   };
 
-  const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
+  const addPurchaseSale = () => {
+    setFormData({
+      ...formData,
+      purchaseSale3Years: [...formData.purchaseSale3Years, { financialYear: '', purchaseRs: '', salesRs: '' }]
+    });
+  };
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
-  const financialYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i - 1}-${currentYear - i}`);
+  const validateForm = () => {
+    return (
+      formData.itReturns.some(item => item.accountingYear && item.ayYear && item.taxableIncome) &&
+      formData.purchaseSale3Years.some(item => item.financialYear && item.purchaseRs && item.salesRs)
+    );
+  };
+
+  const handleNextClick = () => {
+    if (validateForm()) {
+      onNext();
+    } else {
+      alert('Please fill all required fields.');
+    }
+  };
+
+  const handlePreviousClick = () => {
+    onPrevious();
+  };
 
   return (
     <div className="income-returns">
-      <div className="form-header">
-        Income / IT Returns
-      </div>
-      
+      <div className="form-header">Income Returns</div>
       <div className="form-section">
-        
-        <div className="table-section">
-          <table className="it-return-table">
-            <thead>
-              <tr>
-                <th>Accounting Year</th>
-                <th>A.Y Year</th>
-                <th>Taxable Income</th>
-                <th>Tax Paid</th>
-                <th>Tax in arrears if any</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formData.itReturns.map((item, index) => (
-                <tr key={index}>
-                  <td>
-                    <select
-                      value={item.accountingYear}
-                      onChange={(e) => handleITReturnChange(index, 'accountingYear', e.target.value)}
-                    >
-                      <option value="">-- Select --</option>
-                      {years.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      value={item.ayYear}
-                      onChange={(e) => handleITReturnChange(index, 'ayYear', e.target.value)}
-                    >
-                      <option value="">-- Select --</option>
-                      {years.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item.taxableIncome}
-                      onChange={(e) => handleITReturnChange(index, 'taxableIncome', e.target.value)}
-                      placeholder="Taxable Income"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item.taxPaid}
-                      onChange={(e) => handleITReturnChange(index, 'taxPaid', e.target.value)}
-                      placeholder="Tax Paid"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item.taxArrears}
-                      onChange={(e) => handleITReturnChange(index, 'taxArrears', e.target.value)}
-                      placeholder="Tax Arrears"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Purchase Sale 3 Years Section */}
-        <div className="section-header">
-          <h3>Purchase Sale (Position at Least for last 3 Years & Current Year)</h3>
-        </div>
-
-        <div className="table-section">
-          <table className="purchase-sale-table">
-            <thead>
-              <tr>
-                <th>Financial Year</th>
-                <th>Purchase Rs.</th>
-                <th>Sales Rs.</th>
-                <th>Gross Profit</th>
-                <th>Net Profit</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formData.purchaseSale3Years.map((item, index) => (
-                <tr key={index}>
-                  <td>
-                    <select
-                      value={item.financialYear}
-                      onChange={(e) => handlePurchaseSale3YearsChange(index, 'financialYear', e.target.value)}
-                    >
-                      <option value="">-- Select --</option>
-                      {financialYears.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item.purchaseRs}
-                      onChange={(e) => handlePurchaseSale3YearsChange(index, 'purchaseRs', e.target.value)}
-                      placeholder="Purchase Amount"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item.salesRs}
-                      onChange={(e) => handlePurchaseSale3YearsChange(index, 'salesRs', e.target.value)}
-                      placeholder="Sales Amount"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item.grossProfit}
-                      onChange={(e) => handlePurchaseSale3YearsChange(index, 'grossProfit', e.target.value)}
-                      placeholder="Gross Profit"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item.netProfit}
-                      onChange={(e) => handlePurchaseSale3YearsChange(index, 'netProfit', e.target.value)}
-                      placeholder="Net Profit"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Current Financial Year Section */}
-        <div className="section-header">
-          <h3>Purchase Sale (Sales Purchase up to last month in current financial Year)</h3>
-        </div>
-
-        <div className="table-section">
-          <table className="current-year-table">
-            <thead>
-              <tr>
-                <th>Month</th>
-                <th>Purchase (Rs.)</th>
-                <th>Sales (Rs.)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formData.purchaseSaleCurrentYear.map((item, index) => (
-                <tr key={index}>
-                  <td>
-                    <select
-                      value={item.month}
-                      onChange={(e) => handleCurrentYearChange(index, 'month', e.target.value)}
-                    >
-                      <option value="">-- Select --</option>
-                      {months.map((month) => (
-                        <option key={month} value={month}>{month}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item.purchase}
-                      onChange={(e) => handleCurrentYearChange(index, 'purchase', e.target.value)}
-                      placeholder="Purchase Amount"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item.sales}
-                      onChange={(e) => handleCurrentYearChange(index, 'sales', e.target.value)}
-                      placeholder="Sales Amount"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
+        <h3>IT Returns</h3>
+        {formData.itReturns.map((item, index) => (
+          <div key={index} className="form-grid">
+            <div className="form-group">
+              <label>Accounting Year *</label>
+              <input
+                type="text"
+                name="accountingYear"
+                value={item.accountingYear}
+                onChange={(e) => handleITReturnChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>AY Year *</label>
+              <input
+                type="text"
+                name="ayYear"
+                value={item.ayYear}
+                onChange={(e) => handleITReturnChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Taxable Income *</label>
+              <input
+                type="number"
+                name="taxableIncome"
+                value={item.taxableIncome}
+                onChange={(e) => handleITReturnChange(index, e)}
+                required
+              />
+            </div>
+          </div>
+        ))}
+        <button type="button" className="btn btn-secondary" onClick={addITReturn}>
+          Add IT Return
+        </button>
+        <h3>Purchase/Sale (3 Years)</h3>
+        {formData.purchaseSale3Years.map((item, index) => (
+          <div key={index} className="form-grid">
+            <div className="form-group">
+              <label>Financial Year *</label>
+              <input
+                type="text"
+                name="financialYear"
+                value={item.financialYear}
+                onChange={(e) => handlePurchaseSaleChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Purchase (Rs) *</label>
+              <input
+                type="number"
+                name="purchaseRs"
+                value={item.purchaseRs}
+                onChange={(e) => handlePurchaseSaleChange(index, e)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Sales (Rs) *</label>
+              <input
+                type="number"
+                name="salesRs"
+                value={item.salesRs}
+                onChange={(e) => handlePurchaseSaleChange(index, e)}
+                required
+              />
+            </div>
+          </div>
+        ))}
+        <button type="button" className="btn btn-secondary" onClick={addPurchaseSale}>
+          Add Purchase/Sale
+        </button>
         <div className="form-actions">
-          <button type="button" className="btn btn-primary">
+          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick}>
+            Previous
+          </button>
+          <button type="button" className="btn btn-primary" onClick={handleNextClick}>
             Next
           </button>
         </div>
