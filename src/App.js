@@ -16,12 +16,12 @@ const App = () => {
   const [formData, setFormData] = useState({
     newApplication: {},
     customerDetails: {},
-    bankDetails: {},
-    propertyFirm: {},
-    policyDetails: {},
-    guarantorDetails: {},
-    directorPartner: {},
-    incomeReturns: {},
+    bankDetails: { accounts: [] }, // Initialize as array
+    propertyFirm: { firmDetails: [] }, // Initialize with empty array
+    policyDetails: { policies: [] }, // Initialize with empty array
+    guarantorDetails: { guarantors: [] }, // Initialize with empty array
+    directorPartner: { rows: [], type: '' }, // Initialize with empty array and type
+    incomeReturns: { itReturns: [], purchaseSale3Years: [] }, // Initialize with empty arrays
     sharesAdd: {}
   });
 
@@ -54,117 +54,117 @@ const App = () => {
     }));
   };
 
-const validateSection = (sectionId) => {
-  const sectionData = formData[sections[sectionId]];
-  switch (sectionId) {
-    case 0: // NewApplication
-      return (
-        sectionData.branch &&
-        sectionData.appNo &&
-        sectionData.custNo &&
-        sectionData.custName &&
-        sectionData.typeOfLoan &&
-        !isNaN(parseFloat(sectionData.amountOfLoan))
-      );
-    case 1: // CustomerDetails
-      return (
-        sectionData.appNo &&
-        sectionData.brcd &&
-        sectionData.customerNo &&
-        sectionData.customerName &&
-        sectionData.mobile &&
-        sectionData.memberNo &&
-        sectionData.dob &&
-        sectionData.address &&
-        sectionData.roadStreet &&
-        sectionData.pin &&
-        sectionData.city &&
-        sectionData.taluka &&
-        sectionData.district &&
-        sectionData.state &&
-        sectionData.occupation &&
-        !isNaN(parseFloat(sectionData.monthlySalary)) &&
-        !isNaN(parseFloat(sectionData.netSalary)) &&
-        sectionData.firmName &&
-        !isNaN(parseFloat(sectionData.annualIncome)) &&
-        sectionData.officeAddr
-      );
-    case 2: // BankDetails
-      return sectionData.accounts?.some(
-        acc =>
-          acc.type &&
-          acc.branch &&
-          acc.accountNo &&
-          !isNaN(parseFloat(acc.balance))
-      );
-    case 3: // PropertyFirm
-      return (
-        sectionData.personalAssetsOwned &&
-        sectionData.personalAssetsMortgaged &&
-        sectionData.otherAssetsShares &&
-        sectionData.firmDetails?.some(
-          firm => firm.name && firm.business && firm.relation && firm.bankName
-        )
-      );
-    case 4: // PolicyDetails
-      return sectionData.policies?.some(
-        policy =>
-          policy.companyName &&
-          policy.policyNo &&
-          policy.period &&
-          !isNaN(parseFloat(policy.totalPaid))
-      );
-    case 5: // GuarantorDetails
-      return sectionData.guarantors?.some(
-        g =>
-          g.branch &&
-          g.whom &&
-          !isNaN(parseFloat(g.amount)) &&
-          g.institute
-      );
-    case 6: // DirectorsPartner
-      return (
-        sectionData.type &&
-        sectionData.rows?.some(
-          row =>
-            row.name &&
-            row.dob &&
-            !isNaN(parseFloat(row.share)) &&
-            row.qualification
-        )
-      );
-    case 7: // IncomeReturns
-      return (
-        sectionData.itReturns?.some(
-          item =>
-            item.accountingYear &&
-            item.ayYear &&
-            !isNaN(parseFloat(item.taxableIncome))
-        ) &&
-        sectionData.purchaseSale3Years?.some(
-          item =>
-            item.financialYear &&
-            !isNaN(parseFloat(item.purchaseRs)) &&
-            !isNaN(parseFloat(item.salesRs))
-        )
-      );
-    case 8: // SharesAdd
-      return (
-        sectionData.applicationType &&
-        sectionData.memberRefNo &&
-        sectionData.customerNo &&
-        sectionData.applicationNo &&
-        !isNaN(parseInt(sectionData.noOfShares)) &&
-        !isNaN(parseFloat(sectionData.shareValue)) &&
-        sectionData.savingAccNo &&
-        !isNaN(parseFloat(sectionData.totalAmount)) &&
-        sectionData.remark &&
-        sectionData.paymentMode
-      );
-    default:
-      return true;
-  }
-};
+  const validateSection = (sectionId) => {
+    const sectionData = formData[sections[sectionId]];
+    switch (sectionId) {
+      case 0: // NewApplication
+        return (
+          sectionData.branch &&
+          sectionData.appNo &&
+          sectionData.custNo &&
+          sectionData.custName &&
+          sectionData.typeOfLoan &&
+          !isNaN(parseFloat(sectionData.amountOfLoan))
+        );
+      case 1: // CustomerDetails
+        return (
+          sectionData.appNo &&
+          sectionData.brcd &&
+          sectionData.customerNo &&
+          sectionData.customerName &&
+          sectionData.mobile &&
+          sectionData.memberNo &&
+          sectionData.dob &&
+          sectionData.address &&
+          sectionData.roadStreet &&
+          sectionData.pin &&
+          sectionData.city &&
+          sectionData.taluka &&
+          sectionData.district &&
+          sectionData.state &&
+          sectionData.occupation &&
+          !isNaN(parseFloat(sectionData.monthlySalary)) &&
+          !isNaN(parseFloat(sectionData.netSalary)) &&
+          sectionData.firmName &&
+          !isNaN(parseFloat(sectionData.annualIncome)) &&
+          sectionData.officeAddr
+        );
+      case 2: // BankDetails
+        return Array.isArray(sectionData.accounts) && sectionData.accounts.length > 0 && sectionData.accounts.every(
+          acc =>
+            acc.type &&
+            acc.branch &&
+            acc.accountNo &&
+            !isNaN(parseFloat(acc.balance))
+        );
+      case 3: // PropertyFirm
+        return (
+          sectionData.personalAssetsOwned &&
+          sectionData.personalAssetsMortgaged &&
+          sectionData.otherAssetsShares &&
+          Array.isArray(sectionData.firmDetails) && sectionData.firmDetails.length > 0 && sectionData.firmDetails.every(
+            firm => firm.name && firm.business && firm.relation && firm.bankName
+          )
+        );
+      case 4: // PolicyDetails
+        return Array.isArray(sectionData.policies) && sectionData.policies.length > 0 && sectionData.policies.every(
+          policy =>
+            policy.companyName &&
+            policy.policyNo &&
+            policy.period &&
+            !isNaN(parseFloat(policy.totalPaid))
+        );
+      case 5: // GuarantorDetails
+        return Array.isArray(sectionData.guarantors) && sectionData.guarantors.length > 0 && sectionData.guarantors.every(
+          g =>
+            g.branch &&
+            (g.name || g.whom) &&
+            !isNaN(parseFloat(g.amount)) &&
+            g.institute
+        );
+      case 6: // DirectorsPartner
+        return (
+          sectionData.type &&
+          Array.isArray(sectionData.rows) && sectionData.rows.length > 0 && sectionData.rows.every(
+            row =>
+              row.name &&
+              row.dob &&
+              !isNaN(parseFloat(row.share)) &&
+              row.qualification
+          )
+        );
+      case 7: // IncomeReturns
+        return (
+          Array.isArray(sectionData.itReturns) && sectionData.itReturns.length > 0 && sectionData.itReturns.every(
+            item =>
+              item.accountingYear &&
+              item.ayYear &&
+              !isNaN(parseFloat(item.taxableIncome))
+          ) &&
+          Array.isArray(sectionData.purchaseSale3Years) && sectionData.purchaseSale3Years.length > 0 && sectionData.purchaseSale3Years.every(
+            item =>
+              item.financialYear &&
+              !isNaN(parseFloat(item.purchaseRs)) &&
+              !isNaN(parseFloat(item.salesRs))
+          )
+        );
+      case 8: // SharesAdd
+        return (
+          sectionData.applicationType &&
+          sectionData.memberRefNo &&
+          sectionData.customerNo &&
+          sectionData.applicationNo &&
+          !isNaN(parseInt(sectionData.noOfShares)) &&
+          !isNaN(parseFloat(sectionData.shareValue)) &&
+          sectionData.savingAccNo &&
+          !isNaN(parseFloat(sectionData.totalAmount)) &&
+          sectionData.remark &&
+          sectionData.paymentMode
+        );
+      default:
+        return true;
+    }
+  };
 
   const handleTabChange = (tabId) => {
     if (tabId > activeTab) {
@@ -194,29 +194,29 @@ const validateSection = (sectionId) => {
     }
   };
 
-const handleSubmit = () => {
-  if (!validateSection(activeTab)) {
-    alert('Please complete all required fields in Shares Add before submitting.');
-    return;
-  }
-  console.log('FormData being sent:', JSON.stringify(formData, null, 2));
-  fetch('https://loc-backend-v9xf.onrender.com/api/submit-loan', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-  })
-    .then(res => {
-      if (!res.ok) {
-        throw new Error(`HTTP error! Status: ${res.status}`);
-      }
-      return res.json();
+  const handleSubmit = () => {
+    if (!validateSection(activeTab)) {
+      alert('Please complete all required fields in Shares Add before submitting.');
+      return;
+    }
+    console.log('FormData being sent:', JSON.stringify(formData, null, 2));
+    fetch('https://loc-backend-v9xf.onrender.com/api/submit-loan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
     })
-    .then(data => alert(data.message || 'Submission successful'))
-    .catch(err => {
-      console.error('Fetch error:', err);
-      alert('Error submitting: ' + err.message);
-    });
-};
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      })
+      .then(data => alert(data.message || 'Submission successful'))
+      .catch(err => {
+        console.error('Fetch error:', err);
+        alert(`Error submitting: ${err.message}`);
+      });
+  };
 
   const CurrentComponent = components[activeTab];
   const section = sections[activeTab];
