@@ -194,29 +194,33 @@ const App = () => {
     }
   };
 
-  const handleSubmit = () => {
-    if (!validateSection(activeTab)) {
-      alert('Please complete all required fields in Shares Add before submitting.');
-      return;
-    }
-    console.log('FormData being sent:', JSON.stringify(formData, null, 2));
-    fetch('https://loc-backend-v9xf.onrender.com/api/submit-loan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
+const handleSubmit = () => {
+  if (!validateSection(activeTab)) {
+    alert('Please complete all required fields in Shares Add before submitting.');
+    return;
+  }
+  console.log('FormData being sent:', JSON.stringify(formData, null, 2));
+  fetch('https://loc-backend-v9xf.onrender.com/api/submit-loan', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  })
+    .then(res => {
+      console.log('Response status:', res.status, res.statusText);
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status} ${res.statusText}`);
+      }
+      return res.json();
     })
-      .then(res => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status} ${res.statusText}`);
-        }
-        return res.json();
-      })
-      .then(data => alert(data.message || 'Submission successful'))
-      .catch(err => {
-        console.error('Fetch error:', err);
-        alert(`Error submitting: ${err.message}`);
-      });
-  };
+    .then(data => {
+      console.log('Response data:', data);
+      alert(data.message || 'Submission successful');
+    })
+    .catch(err => {
+      console.error('Fetch error:', err);
+      alert(`Error submitting: ${err.message}`);
+    });
+};
 
   const CurrentComponent = components[activeTab];
   const section = sections[activeTab];
