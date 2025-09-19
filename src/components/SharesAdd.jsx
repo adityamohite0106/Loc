@@ -154,7 +154,7 @@ const SharesAdd = ({ data, onUpdate, onPrevious, onSubmit }) => {
           </div>
         </div>
         <div className="form-actions">
-          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick}>
+          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick} style={{ marginTop: '0px' }}>
             Previous
           </button>
           <button type="button" className="btn btn-primary" onClick={handleSubmitClick}>

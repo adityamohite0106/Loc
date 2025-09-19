@@ -1,18 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import '../styles/IncomeReturns.css';
 
 const IncomeReturns = ({ data, onUpdate, onNext, onPrevious }) => {
   const [formData, setFormData] = useState({
-    itReturns: data.itReturns || [{ accountingYear: '', ayYear: '', taxableIncome: '' }],
-    purchaseSale3Years: data.purchaseSale3Years || [{ financialYear: '', purchaseRs: '', salesRs: '' }]
+    itReturns: data.itReturns?.length > 0 ? data.itReturns : [{ accountingYear: '', ayYear: '', taxableIncome: '' }],
+    purchaseSale3Years:
+      data.purchaseSale3Years?.length >= 3
+        ? data.purchaseSale3Years
+        : [
+            { financialYear: '', purchaseRs: '', salesRs: '' },
+            { financialYear: '', purchaseRs: '', salesRs: '' },
+            { financialYear: '', purchaseRs: '', salesRs: '' }
+          ].slice(0, 3 - (data.purchaseSale3Years?.length || 0)).concat(data.purchaseSale3Years || [])
   });
+
+  // Sync formData with parent data when it changes
+  useEffect(() => {
+    setFormData({
+      itReturns: data.itReturns?.length > 0 ? data.itReturns : [{ accountingYear: '', ayYear: '', taxableIncome: '' }],
+      purchaseSale3Years:
+        data.purchaseSale3Years?.length >= 3
+          ? data.purchaseSale3Years
+          : [
+              { financialYear: '', purchaseRs: '', salesRs: '' },
+              { financialYear: '', purchaseRs: '', salesRs: '' },
+              { financialYear: '', purchaseRs: '', salesRs: '' }
+            ].slice(0, 3 - (data.purchaseSale3Years?.length || 0)).concat(data.purchaseSale3Years || [])
+    });
+  }, [data]);
 
   const handleITReturnChange = (index, e) => {
     const { name, value } = e.target;
     const updatedITReturns = [...formData.itReturns];
     updatedITReturns[index] = { ...updatedITReturns[index], [name]: value };
     setFormData({ ...formData, itReturns: updatedITReturns });
-    onUpdate({ ...formData, itReturns: updatedITReturns });
+    onUpdate({ itReturns: updatedITReturns });
   };
 
   const handlePurchaseSaleChange = (index, e) => {
@@ -20,7 +43,7 @@ const IncomeReturns = ({ data, onUpdate, onNext, onPrevious }) => {
     const updatedPurchaseSales = [...formData.purchaseSale3Years];
     updatedPurchaseSales[index] = { ...updatedPurchaseSales[index], [name]: value };
     setFormData({ ...formData, purchaseSale3Years: updatedPurchaseSales });
-    onUpdate({ ...formData, purchaseSale3Years: updatedPurchaseSales });
+    onUpdate({ purchaseSale3Years: updatedPurchaseSales });
   };
 
   const addITReturn = () => {
@@ -39,8 +62,23 @@ const IncomeReturns = ({ data, onUpdate, onNext, onPrevious }) => {
 
   const validateForm = () => {
     return (
-      formData.itReturns.some(item => item.accountingYear && item.ayYear && item.taxableIncome) &&
-      formData.purchaseSale3Years.some(item => item.financialYear && item.purchaseRs && item.salesRs)
+      formData.itReturns.length >= 1 &&
+      formData.itReturns.some(
+        item =>
+          item.accountingYear &&
+          item.ayYear &&
+          !isNaN(parseFloat(item.taxableIncome)) &&
+          parseFloat(item.taxableIncome) >= 0
+      ) &&
+      formData.purchaseSale3Years.length >= 3 &&
+      formData.purchaseSale3Years.slice(0, 3).every(
+        item =>
+          item.financialYear &&
+          !isNaN(parseFloat(item.purchaseRs)) &&
+          parseFloat(item.purchaseRs) >= 0 &&
+          !isNaN(parseFloat(item.salesRs)) &&
+          parseFloat(item.salesRs) >= 0
+      )
     );
   };
 
@@ -48,7 +86,15 @@ const IncomeReturns = ({ data, onUpdate, onNext, onPrevious }) => {
     if (validateForm()) {
       onNext();
     } else {
-      alert('Please fill all required fields.');
+      toast.error('Please fill all required fields for at least one IT Return and the first three Purchase/Sale entries.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored'
+      });
     }
   };
 
@@ -69,7 +115,7 @@ const IncomeReturns = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="text"
                 name="accountingYear"
                 value={item.accountingYear}
-                onChange={(e) => handleITReturnChange(index, e)}
+                onChange={e => handleITReturnChange(index, e)}
                 required
               />
             </div>
@@ -79,7 +125,7 @@ const IncomeReturns = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="text"
                 name="ayYear"
                 value={item.ayYear}
-                onChange={(e) => handleITReturnChange(index, e)}
+                onChange={e => handleITReturnChange(index, e)}
                 required
               />
             </div>
@@ -89,7 +135,7 @@ const IncomeReturns = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="number"
                 name="taxableIncome"
                 value={item.taxableIncome}
-                onChange={(e) => handleITReturnChange(index, e)}
+                onChange={e => handleITReturnChange(index, e)}
                 required
               />
             </div>
@@ -98,37 +144,37 @@ const IncomeReturns = ({ data, onUpdate, onNext, onPrevious }) => {
         <button type="button" className="btn btn-secondary" onClick={addITReturn}>
           Add IT Return
         </button>
-        <h3>Purchase/Sale (3 Years)</h3>
+        <h3 style={{ marginTop: '30px' }}>Purchase/Sale (3 Years)</h3>
         {formData.purchaseSale3Years.map((item, index) => (
           <div key={index} className="form-grid">
             <div className="form-group">
-              <label>Financial Year *</label>
+              <label>Financial Year {index < 3 ? '*' : ''}</label>
               <input
                 type="text"
                 name="financialYear"
                 value={item.financialYear}
-                onChange={(e) => handlePurchaseSaleChange(index, e)}
-                required
+                onChange={e => handlePurchaseSaleChange(index, e)}
+                required={index < 3}
               />
             </div>
             <div className="form-group">
-              <label>Purchase (Rs) *</label>
+              <label>Purchase (Rs) {index < 3 ? '*' : ''}</label>
               <input
                 type="number"
                 name="purchaseRs"
                 value={item.purchaseRs}
-                onChange={(e) => handlePurchaseSaleChange(index, e)}
-                required
+                onChange={e => handlePurchaseSaleChange(index, e)}
+                required={index < 3}
               />
             </div>
             <div className="form-group">
-              <label>Sales (Rs) *</label>
+              <label>Sales (Rs) {index < 3 ? '*' : ''}</label>
               <input
                 type="number"
                 name="salesRs"
                 value={item.salesRs}
-                onChange={(e) => handlePurchaseSaleChange(index, e)}
-                required
+                onChange={e => handlePurchaseSaleChange(index, e)}
+                required={index < 3}
               />
             </div>
           </div>
@@ -137,7 +183,7 @@ const IncomeReturns = ({ data, onUpdate, onNext, onPrevious }) => {
           Add Purchase/Sale
         </button>
         <div className="form-actions">
-          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick}>
+          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick} style={{ marginTop: '0px' }}>
             Previous
           </button>
           <button type="button" className="btn btn-primary" onClick={handleNextClick}>

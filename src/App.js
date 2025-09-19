@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Tabs from './components/Tabs';
 import NewApplication from './components/NewApplication';
 import CustomerDetails from './components/CustomerDetails';
@@ -16,14 +18,15 @@ const App = () => {
   const [formData, setFormData] = useState({
     newApplication: {},
     customerDetails: {},
-    bankDetails: { accounts: [] }, // Initialize as array
-    propertyFirm: { firmDetails: [] }, // Initialize with empty array
-    policyDetails: { policies: [] }, // Initialize with empty array
-    guarantorDetails: { guarantors: [] }, // Initialize with empty array
-    directorPartner: { rows: [], type: '' }, // Initialize with empty array and type
-    incomeReturns: { itReturns: [], purchaseSale3Years: [] }, // Initialize with empty arrays
+    bankDetails: { accounts: [] },
+    propertyFirm: { firmDetails: [] },
+    policyDetails: { policies: [] },
+    guarantorDetails: { guarantors: [] },
+    directorPartner: { rows: [], type: '' },
+    incomeReturns: { itReturns: [], purchaseSale3Years: [] },
     sharesAdd: {}
   });
+  const [validatedTabs, setValidatedTabs] = useState(new Array(9).fill(false)); // Track validated tabs
 
   const tabs = [
     { id: 0, label: 'Loan Application' },
@@ -167,24 +170,31 @@ const App = () => {
   };
 
   const handleTabChange = (tabId) => {
-    if (tabId > activeTab) {
-      for (let i = activeTab; i < tabId; i++) {
-        if (!validateSection(i)) {
-          alert(`Please complete all required fields in ${tabs[i].label} before proceeding.`);
-          return;
-        }
-      }
-    }
     setActiveTab(tabId);
   };
 
   const handleNext = () => {
+    // Validate the current tab
     if (validateSection(activeTab)) {
+      // Mark current tab as validated
+      setValidatedTabs(prev => {
+        const newValidatedTabs = [...prev];
+        newValidatedTabs[activeTab] = true;
+        return newValidatedTabs;
+      });
       if (activeTab < tabs.length - 1) {
         setActiveTab(activeTab + 1);
       }
     } else {
-      alert(`Please complete all required fields in ${tabs[activeTab].label} before proceeding.`);
+      toast.error(`Please complete all required fields in "${tabs[activeTab].label}" to proceed.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored"
+      });
     }
   };
 
@@ -194,33 +204,63 @@ const App = () => {
     }
   };
 
-const handleSubmit = () => {
-  if (!validateSection(activeTab)) {
-    alert('Please complete all required fields in Shares Add before submitting.');
-    return;
-  }
-  console.log('FormData being sent:', JSON.stringify(formData, null, 2));
-  fetch('https://loc-backend-v9xf.onrender.com/api/submit-loan', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-  })
-    .then(res => {
-      console.log('Response status:', res.status, res.statusText);
-      if (!res.ok) {
-        throw new Error(`HTTP error! Status: ${res.status} ${res.statusText}`);
+  const handleSubmit = () => {
+    // Validate all sections before submission
+    for (let i = 0; i < tabs.length; i++) {
+      if (!validateSection(i)) {
+        toast.error(`Please complete all required fields in "${tabs[i].label}" before submitting.`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored"
+        });
+        setActiveTab(i); // Switch to the first invalid tab
+        return;
       }
-      return res.json();
+    }
+
+    // If all validations pass, proceed with submission
+    console.log('FormData being sent:', JSON.stringify(formData, null, 2));
+    fetch('https://loc-backend-v9xf.onrender.com/api/submit-loan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
     })
-    .then(data => {
-      console.log('Response data:', data);
-      alert(data.message || 'Submission successful');
-    })
-    .catch(err => {
-      console.error('Fetch error:', err);
-      alert(`Error submitting: ${err.message}`);
-    });
-};
+      .then(res => {
+        console.log('Response status:', res.status, res.statusText);
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log('Response data:', data);
+        toast.success(data.message || 'Loan application submitted successfully!', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored"
+        });
+      })
+      .catch(err => {
+        console.error('Fetch error:', err);
+        toast.error(`Error submitting: ${err.message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored"
+        });
+      });
+  };
 
   const CurrentComponent = components[activeTab];
   const section = sections[activeTab];
@@ -230,7 +270,7 @@ const handleSubmit = () => {
       <div className="app-header">
         <h1>Loan Application Details</h1>
       </div>
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
+      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} validatedTabs={validatedTabs} />
       <div className="app-container">
         <div className="tab-content">
           <CurrentComponent
@@ -242,6 +282,7 @@ const handleSubmit = () => {
           />
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

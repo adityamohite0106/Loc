@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import '../styles/DirectorsPartner.css';
 
 const DirectorsPartner = ({ data, onUpdate, onNext, onPrevious }) => {
   const [formData, setFormData] = useState({
     type: data.type || '',
-    rows: data.rows || [{ name: '', dob: '', share: '', qualification: '' }]
+    rows:
+      data.rows?.length > 0
+        ? data.rows
+        : [{ name: '', dob: '', share: '', qualification: '' }]
   });
+
+  // Sync formData with parent data when it changes
+  useEffect(() => {
+    setFormData({
+      type: data.type || '',
+      rows:
+        data.rows?.length > 0
+          ? data.rows
+          : [{ name: '', dob: '', share: '', qualification: '' }]
+    });
+  }, [data]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,7 +34,7 @@ const DirectorsPartner = ({ data, onUpdate, onNext, onPrevious }) => {
     const updatedRows = [...formData.rows];
     updatedRows[index] = { ...updatedRows[index], [name]: value };
     setFormData({ ...formData, rows: updatedRows });
-    onUpdate({ ...formData, rows: updatedRows });
+    onUpdate({ rows: updatedRows });
   };
 
   const addRow = () => {
@@ -30,14 +45,33 @@ const DirectorsPartner = ({ data, onUpdate, onNext, onPrevious }) => {
   };
 
   const validateForm = () => {
-    return formData.type && formData.rows.some(row => row.name && row.dob && row.share && row.qualification);
+    return (
+      formData.type &&
+      formData.rows.length >= 1 &&
+      formData.rows.some(
+        row =>
+          row.name &&
+          row.dob &&
+          !isNaN(parseFloat(row.share)) &&
+          parseFloat(row.share) >= 0 &&
+          row.qualification
+      )
+    );
   };
 
   const handleNextClick = () => {
     if (validateForm()) {
       onNext();
     } else {
-      alert('Please fill all required fields.');
+      toast.error('Please fill all required fields for Type and at least one Director/Partner entry.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored'
+      });
     }
   };
 
@@ -65,7 +99,7 @@ const DirectorsPartner = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="text"
                 name="name"
                 value={row.name}
-                onChange={(e) => handleRowChange(index, e)}
+                onChange={e => handleRowChange(index, e)}
                 required
               />
             </div>
@@ -75,7 +109,7 @@ const DirectorsPartner = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="date"
                 name="dob"
                 value={row.dob}
-                onChange={(e) => handleRowChange(index, e)}
+                onChange={e => handleRowChange(index, e)}
                 required
               />
             </div>
@@ -85,7 +119,7 @@ const DirectorsPartner = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="number"
                 name="share"
                 value={row.share}
-                onChange={(e) => handleRowChange(index, e)}
+                onChange={e => handleRowChange(index, e)}
                 required
               />
             </div>
@@ -95,7 +129,7 @@ const DirectorsPartner = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="text"
                 name="qualification"
                 value={row.qualification}
-                onChange={(e) => handleRowChange(index, e)}
+                onChange={e => handleRowChange(index, e)}
                 required
               />
             </div>
@@ -105,7 +139,7 @@ const DirectorsPartner = ({ data, onUpdate, onNext, onPrevious }) => {
           Add Row
         </button>
         <div className="form-actions">
-          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick}>
+          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick} style={{ marginTop: '0px' }}>
             Previous
           </button>
           <button type="button" className="btn btn-primary" onClick={handleNextClick}>

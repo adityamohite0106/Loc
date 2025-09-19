@@ -242,7 +242,7 @@ const NewApplication = ({ data, onUpdate, onNext, onPrevious }) => {
           </div>
         </div>
         <div className="form-actions">
-          <button type="button" className="btn btn-secondary" onClick={onPrevious} disabled={true}>
+          <button type="button" className="btn btn-secondary" onClick={onPrevious} disabled={true} style={{ marginTop: '0px' }}>
             Previous
           </button>
           <button type="button" className="btn btn-primary" onClick={handleNextClick}>

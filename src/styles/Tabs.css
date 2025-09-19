@@ -11,6 +11,15 @@
   height: 6px;
 }
 
+.tab.validated {
+    color: #4fcc6c;
+    background: white;
+    border-bottom-color: #4fcc6c;
+    box-shadow: 0 2px 8px rgba(79, 131, 204, 0.15);
+    font-weight: 600;
+}
+
+
 .tabs-container::-webkit-scrollbar-track {
   background: #f8fafc;
 }

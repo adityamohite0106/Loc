@@ -65,10 +65,10 @@
 }
 
 .accounts-row input {
-  border: 1.5px solid #b3d3f7;
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-size: 1rem;
+  border: 1px solid #b3d3f7;
+  border-radius: 4px;
+  padding: 6px 8px;      /* smaller padding */
+  font-size: 0.85rem;    /* smaller text */
   background: #fafdff;
   color: #222;
   outline: none;

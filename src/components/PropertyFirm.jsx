@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import '../styles/PropertyFirm.css';
 
 const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
@@ -6,8 +7,24 @@ const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
     personalAssetsOwned: data.personalAssetsOwned || '',
     personalAssetsMortgaged: data.personalAssetsMortgaged || '',
     otherAssetsShares: data.otherAssetsShares || '',
-    firmDetails: data.firmDetails || [{ name: '', business: '', relation: '', bankName: '' }]
+    firmDetails:
+      data.firmDetails?.length > 0
+        ? data.firmDetails
+        : [{ name: '', business: '', relation: '', bankName: '' }]
   });
+
+  // Sync formData with parent data when it changes
+  useEffect(() => {
+    setFormData({
+      personalAssetsOwned: data.personalAssetsOwned || '',
+      personalAssetsMortgaged: data.personalAssetsMortgaged || '',
+      otherAssetsShares: data.otherAssetsShares || '',
+      firmDetails:
+        data.firmDetails?.length > 0
+          ? data.firmDetails
+          : [{ name: '', business: '', relation: '', bankName: '' }]
+    });
+  }, [data]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +38,7 @@ const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
     const updatedFirms = [...formData.firmDetails];
     updatedFirms[index] = { ...updatedFirms[index], [name]: value };
     setFormData({ ...formData, firmDetails: updatedFirms });
-    onUpdate({ ...formData, firmDetails: updatedFirms });
+    onUpdate({ firmDetails: updatedFirms });
   };
 
   const addFirm = () => {
@@ -36,6 +53,7 @@ const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
       formData.personalAssetsOwned &&
       formData.personalAssetsMortgaged &&
       formData.otherAssetsShares &&
+      formData.firmDetails.length >= 1 &&
       formData.firmDetails.some(firm => firm.name && firm.business && firm.relation && firm.bankName)
     );
   };
@@ -44,7 +62,15 @@ const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
     if (validateForm()) {
       onNext();
     } else {
-      alert('Please fill all required fields.');
+      toast.error('Please fill all required fields for Personal Assets and at least one Firm Details entry.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored'
+      });
     }
   };
 
@@ -93,7 +119,7 @@ const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="text"
                 name="name"
                 value={firm.name}
-                onChange={(e) => handleFirmChange(index, e)}
+                onChange={e => handleFirmChange(index, e)}
                 required
               />
             </div>
@@ -103,7 +129,7 @@ const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="text"
                 name="business"
                 value={firm.business}
-                onChange={(e) => handleFirmChange(index, e)}
+                onChange={e => handleFirmChange(index, e)}
                 required
               />
             </div>
@@ -113,7 +139,7 @@ const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="text"
                 name="relation"
                 value={firm.relation}
-                onChange={(e) => handleFirmChange(index, e)}
+                onChange={e => handleFirmChange(index, e)}
                 required
               />
             </div>
@@ -123,7 +149,7 @@ const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
                 type="text"
                 name="bankName"
                 value={firm.bankName}
-                onChange={(e) => handleFirmChange(index, e)}
+                onChange={e => handleFirmChange(index, e)}
                 required
               />
             </div>
@@ -133,7 +159,7 @@ const PropertyFirm = ({ data, onUpdate, onNext, onPrevious }) => {
           Add Firm
         </button>
         <div className="form-actions">
-          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick}>
+          <button type="button" className="btn btn-secondary" onClick={handlePreviousClick} style={{ marginTop: '0px' }}>
             Previous
           </button>
           <button type="button" className="btn btn-primary" onClick={handleNextClick}>
